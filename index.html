@@ -7,16 +7,20 @@
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://pyscript.net/releases/2026.1.1/core.css">
     <script type="module" src="https://pyscript.net/releases/2026.1.1/core.js"></script>
+    <py-config>
+        [[fetch]]
+        files = ["wordbank/600vocabWords.txt"]
+    </py-config>    
 </head>
 <body>
     <h1>Typo Terminator</h1>
     <h3>Made by: Logan Luis and Tyrone</h3>
 
     <div class="container">
-        <h1>External Python Counter</h1>
-        <h2 id="count">0</h2>
+        <h1>Random Word Button</h1>
+        <h2 id="WordDisplay"> ... </h2>
         <button id="btn">Click Me!</button>
     </div>
-    <script type="py" src="./python/test.py"></script>
+    <script type="py" src="./python/randomwordDisplay.py"></script>
 </body>
 </html>
