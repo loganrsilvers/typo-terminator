@@ -11,10 +11,3 @@
     font-family: "main";
     src: url("fonts/TTMedium.ttf");
 }  
-
-body{
-    background-color: var(--dark);
-    background-image: url(../img/navy.png);
-    color: var(--light);
-    font-family: 'main';
-}

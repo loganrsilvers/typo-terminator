@@ -1,0 +1,36 @@
+:root{
+    --light: #EEEEFF;
+    --med: #9FB4C7;
+    --dark: #28587B;
+    --purple: #7F7CAF;
+    --dark-purple:#330C2F;
+    --green: #9FB798;
+}
+
+@font-face {
+    font-family: "main";
+    src: url("fonts/TTMedium.ttf");
+}  
+
+
+.container {
+    text-align: center;
+    margin-top: 50px; 
+}
+
+button {
+    padding: 10px 20px;
+    font-size: 18px;
+    background-color: var(--purple);
+    color: var(--light);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font: 'main';
+}
+
+button:hover {
+    background-color: var(--med);
+    color: var(--dark-purple);
+
+}
