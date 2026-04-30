@@ -13,7 +13,8 @@
         packages = ["jellyfish", "numpy"]
 
         [[fetch]]
-        files = ["wordbank/600vocabWords.txt"]
+        # CRITICAL: Added the python file so the import works!
+        files = ["wordbank/600vocabWords.txt", "python/phoneticTypo.py"]
     </py-config>    
 </head>
 <body>
@@ -28,13 +29,13 @@
         <!-- The challenge word from your TypoGenerator class -->
         <h1 id="WordDisplay">history</h1>
         
-        <!-- This is where your typing will appear live as you type on your keyboard -->
+        <!-- This is where your typing will appear live -->
         <div id="LiveTypeDisplay" style="min-height: 1.5em; font-size: 2rem; font-weight: bold; margin: 20px 0;"></div>
         
         <button id="btn">Click Me!</button>
     </div>
 
-    <!-- This script handles the keyboard listener and the Phonetic Typo logic -->
+    <!-- Ensure the path to your display script is correct -->
     <script type="py" src="./python/randomwordDisplay.py"></script>
 </body>
 </html>
