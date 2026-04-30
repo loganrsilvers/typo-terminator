@@ -10,11 +10,11 @@
     <script type="module" src="https://pyscript.net/releases/2026.1.1/core.js"></script>
     
     <py-config>
-        # Ensure jellyfish and numpy are available for the merged logic
+        # Core packages for your TypoGenerator logic
         packages = ["jellyfish", "numpy"]
 
         [[fetch]]
-        # We only need to fetch the word bank now since all logic is in one file
+        # Fetching the wordbank so it's available in the virtual filesystem
         files = ["wordbank/600vocabWords.txt"]
     </py-config>    
 </head>
@@ -27,19 +27,20 @@
     </nav>
 
     <div class="container">
-        <!-- The challenge word display -->
+        <!-- Displays the scrambled typo -->
         <h1 id="WordDisplay">history</h1>
         
-        <!-- Live typing container - Matches the ID used in your merged Python script -->
-        <div id="LiveTypeDisplay" style="min-height: 1.5em; font-size: 2rem; font-weight: bold; margin: 20px 0;"></div>
+        <!-- Standard Input Box: Reliable typing that doesn't "break" -->
+        <input type="text" id="UserTypingBox" placeholder="Type the correct word..." 
+               style="font-size: 1.5rem; padding: 10px; margin: 20px 0; border-radius: 8px; border: 2px solid var(--med); background: transparent; color: white; text-align: center; width: 80%;">
         
-        <button id="btn">Click Me!</button>
+        <!-- Feedback area for success messages -->
+        <div id="Feedback" style="font-weight: bold; margin-bottom: 10px; min-height: 1.2em;"></div>
+        
+        <button id="btn">Next Word</button>
     </div>
 
-    <!-- 
-      This script now contains the TypoGenerator class, the keyboard listener, 
-      and the button logic all in one place.
-    -->
+    <!-- The single Python file containing all your logic -->
     <script type="py" src="python/randomwordDisplay.py" config="py-config"></script>
 </body>
 </html>
