@@ -10,7 +10,6 @@ class TypoGenerator:
     def __init__(self, word_bank_file):
         try:
             text = Path(word_bank_file).read_text(encoding="utf-8")
-            # Splitting by commas or newlines and stripping whitespace
             self.words = [w.strip().lower() for w in text.replace("\n", " ").split(",") if w.strip()]
         except Exception as e:
             print(f"Load Error: {e}. Using emergency backup words.")
@@ -45,42 +44,63 @@ class TypoGenerator:
         word = random.choice(self.words)
         return word, self.generate_typo(word)
 
-# --- 2. Initialize Logic ---
+# --- 2. NEW: GameTester Class ---
+class GameTester:
+    def __init__(self, generator):
+        self.gen = generator
+
+    def run_all_tests(self):
+        print("--- STARTING SYSTEM TEST ---")
+        self.test_word_loading()
+        self.test_typo_generation()
+        print("--- SYSTEM TEST COMPLETE ---")
+
+    def test_word_loading(self):
+        if len(self.gen.words) > 0:
+            print(f"✅ SUCCESS: Word bank loaded with {len(self.gen.words)} words.")
+        else:
+            print("❌ FAIL: Word bank is empty.")
+
+    def test_typo_generation(self):
+        orig, typo = self.gen.get_challenge()
+        if orig != typo:
+            print(f"✅ SUCCESS: Generated challenge '{typo}' from '{orig}'.")
+        else:
+            print("❌ FAIL: Generator returned the original word (no typo).")
+
+# --- 3. Logic & Event Handlers ---
 gen = TypoGenerator("wordbank/600vocabWords.txt")
 correct_answer = ""
 
 @when("click", "#btn")
 def handle_click(event):
     global correct_answer
-    
     input_box = document.getElementById("UserTypingBox")
     user_input = input_box.value.lower().strip()
 
-    # Debug logs for the console
-    print(f"Comparing: '{user_input}' with '{correct_answer}'")
-
     if user_input == correct_answer:
-        print("Match found!")
         load_new_word()
     else:
         input_box.style.borderColor = "red"
-        print(f"Mismatch: Length of input is {len(user_input)}, Answer is {len(correct_answer)}")
+        print(f"Mismatch! Answer is: {correct_answer}")
 
 def load_new_word():
     global correct_answer
-    
     word_display = document.getElementById("WordDisplay")
     input_box = document.getElementById("UserTypingBox")
     
-    # Safety check: ensure elements exist before updating
     if word_display and input_box:
         original, typo = gen.get_challenge()
-        correct_answer = original.lower().strip() # Double strip for safety
-        
+        correct_answer = original.lower().strip()
         word_display.innerText = typo.lower()
         input_box.value = ""
         input_box.style.borderColor = "white"
         input_box.focus()
+
+# --- 4. Execution ---
+# Run the tests first to check the "engine"
+tester = GameTester(gen)
+tester.run_all_tests()
 
 # Start the game
 load_new_word()
