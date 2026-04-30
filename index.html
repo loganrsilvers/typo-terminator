@@ -10,10 +10,11 @@
     <script type="module" src="https://pyscript.net/releases/2026.1.1/core.js"></script>
     
     <py-config>
+        # Ensure jellyfish and numpy are available for phoneticTypo.py
         packages = ["jellyfish", "numpy"]
 
         [[fetch]]
-        # CRITICAL: Added the python file so the import works!
+        # We fetch the wordbank and the logic file so 'import phoneticTypo' works
         files = ["wordbank/600vocabWords.txt", "python/phoneticTypo.py"]
     </py-config>    
 </head>
@@ -29,13 +30,16 @@
         <!-- The challenge word from your TypoGenerator class -->
         <h1 id="WordDisplay">history</h1>
         
-        <!-- This is where your typing will appear live -->
+        <!-- Live typing container -->
         <div id="LiveTypeDisplay" style="min-height: 1.5em; font-size: 2rem; font-weight: bold; margin: 20px 0;"></div>
         
         <button id="btn">Click Me!</button>
     </div>
 
-    <!-- Ensure the path to your display script is correct -->
-    <script type="py" src="./python/randomwordDisplay.py"></script>
+    <!-- 
+      Using 'src' for the main display logic. 
+      The browser will now look for 'randomwordDisplay.py' in your python folder.
+    -->
+    <script type="py" src="python/randomwordDisplay.py" config="py-config"></script>
 </body>
 </html>
