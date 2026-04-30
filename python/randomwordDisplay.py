@@ -1,25 +1,43 @@
-import random
-import os
-from pyscript import when, document
+from pyscript import when, document, window
 
-file_path = "wordbank/600vocabWords.txt"
-word_list = []
+current_typing = "" # Stores what you've typed so far
+correct_answer = "" # From your TypoGenerator
 
-# 1. Load the list once when the script starts
-if os.path.exists(file_path):
-    with open(file_path, "r") as file:
-        content = file.read()
-        # Split by commas and clean up whitespace
-        word_list = [w.strip() for w in content.split(',') if w.strip()]
-else:
-    print(f"Error: {file_path} not found.")
+@when("keydown", "html")
+def handle_keypress(event):
+    global current_typing
+    
+    # event.key is the character you pressed
+    key = event.key
+    
+    # 1. Handle Backspace
+    if key == "Backspace":
+        current_typing = current_typing[:-1]
+    
+    # 2. Handle standard characters (ignore Shift, Ctrl, etc.)
+    elif len(key) == 1:
+        # Convert to lowercase as you requested earlier
+        current_typing += key.lower()
+
+    # 3. Update the display under the word
+    display_element = document.getElementById("LiveTypeDisplay")
+    display_element.innerText = current_typing
+
+    # 4. Auto-check if correct
+    if current_typing == correct_answer:
+        display_element.style.color = "var(--green)"
+        print("Match found!")
 
 @when("click", "#btn")
 def getWord(event):
-    if word_list:
-        # 2. Pick a NEW random word inside the function
-        new_word = random.choice(word_list)
-        # 3. Display the word (make sure your HTML ID is "count")
-        document.getElementById("WordDisplay").innerText = new_word
-    else:
-        document.getElementById("WordDisplay").innerText = "List Empty"
+    global current_typing, correct_answer
+    
+    # Reset the typing for the new round
+    current_typing = ""
+    document.getElementById("LiveTypeDisplay").innerText = ""
+    document.getElementById("LiveTypeDisplay").style.color = "var(--med)"
+    
+    # Get your word from the TypoGenerator class
+    original, typo = gen.get_challenge()
+    correct_answer = original
+    document.getElementById("WordDisplay").innerText = typo
