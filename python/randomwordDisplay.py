@@ -8,10 +8,14 @@ from pyscript import when, document
 # --- 1. TypoGenerator Class ---
 class TypoGenerator:
     def __init__(self, word_bank_file):
-        # Using Path to read the fetched file
-        text = Path(word_bank_file).read_text(encoding="utf-8")
-        # Clean up the word bank (split by commas or newlines)
-        self.words = [w.strip().lower() for w in text.replace("\n", " ").split(",") if w.strip()]
+        try:
+            # Try to load your actual file
+            text = Path(word_bank_file).read_text(encoding="utf-8")
+            self.words = [w.strip().lower() for w in text.replace("\n", " ").split(",") if w.strip()]
+        except Exception as e:
+            print(f"File Error: {e}. Using backup words.")
+            # BACKUP: If the file fails, these will keep the game running
+            self.words = ["programming", "columbia", "chicago", "software", "development", "technician"]
 
     def phonetic_code(self, word):
         return {
@@ -57,8 +61,8 @@ class TypoGenerator:
         typo = self.generate_typo(word)
         return word, typo
 
-# --- 2. Game Variables ---
-# Ensure this path matches your [[fetch]] in HTML
+# --- 2. Game Initialization ---
+# This matches your HTML [[fetch]]
 gen = TypoGenerator("wordbank/600vocabWords.txt")
 current_typing = ""
 correct_answer = ""
@@ -76,19 +80,18 @@ def handle_keypress(event):
     elif len(key) == 1:
         current_typing += key.lower()
 
+    # Match ID "LiveTypeDisplay"
     display_element = document.getElementById("LiveTypeDisplay")
     if display_element:
         display_element.innerText = current_typing
-
-        # Check if typed correctly
+        
         if current_typing.strip() == correct_answer.lower().strip():
-            display_element.style.color = "var(--green)"
+            display_element.style.color = "#4CAF50" # Solid green backup
             print("Match found!")
 
 @when("click", "#btn")
 def getWord(event=None):
     global current_typing, correct_answer
-    
     current_typing = ""
     
     live_display = document.getElementById("LiveTypeDisplay")
@@ -96,13 +99,11 @@ def getWord(event=None):
     
     if live_display and word_display:
         live_display.innerText = ""
-        live_display.style.color = "var(--med)"
+        live_display.style.color = "white" # Reset color
         
-        # Get new word
         original, typo = gen.get_challenge()
         correct_answer = original.lower()
         word_display.innerText = typo.lower()
-        print(f"New word loaded. Answer is: {correct_answer}")
 
-# --- 4. Initialize Game ---
+# Start the game
 getWord()
