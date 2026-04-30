@@ -10,8 +10,10 @@ class TypoGenerator:
     def __init__(self, word_bank_file):
         try:
             text = Path(word_bank_file).read_text(encoding="utf-8")
+            # Splitting by commas or newlines and stripping whitespace
             self.words = [w.strip().lower() for w in text.replace("\n", " ").split(",") if w.strip()]
-        except Exception:
+        except Exception as e:
+            print(f"Load Error: {e}. Using emergency backup words.")
             self.words = ["programming", "columbia", "chicago", "software", "development"]
 
     def phonetic_code(self, word):
@@ -43,7 +45,7 @@ class TypoGenerator:
         word = random.choice(self.words)
         return word, self.generate_typo(word)
 
-# --- 2. Logic ---
+# --- 2. Initialize Logic ---
 gen = TypoGenerator("wordbank/600vocabWords.txt")
 correct_answer = ""
 
@@ -54,14 +56,15 @@ def handle_click(event):
     input_box = document.getElementById("UserTypingBox")
     user_input = input_box.value.lower().strip()
 
-    # ONLY move forward if the input is correct
-    # (If it's the very first load, correct_answer is "" so we skip this check)
-    if correct_answer == "" or user_input == correct_answer:
+    # Debug logs for the console
+    print(f"Comparing: '{user_input}' with '{correct_answer}'")
+
+    if user_input == correct_answer:
+        print("Match found!")
         load_new_word()
     else:
-        # Visual cue that it was wrong
         input_box.style.borderColor = "red"
-        print(f"Wrong! You typed '{user_input}', but we need '{correct_answer}'")
+        print(f"Mismatch: Length of input is {len(user_input)}, Answer is {len(correct_answer)}")
 
 def load_new_word():
     global correct_answer
@@ -69,14 +72,15 @@ def load_new_word():
     word_display = document.getElementById("WordDisplay")
     input_box = document.getElementById("UserTypingBox")
     
-    original, typo = gen.get_challenge()
-    correct_answer = original.lower()
-    
-    # Update UI
-    word_display.innerText = typo.lower()
-    input_box.value = ""
-    input_box.style.borderColor = "white"
-    input_box.focus()
+    # Safety check: ensure elements exist before updating
+    if word_display and input_box:
+        original, typo = gen.get_challenge()
+        correct_answer = original.lower().strip() # Double strip for safety
+        
+        word_display.innerText = typo.lower()
+        input_box.value = ""
+        input_box.style.borderColor = "white"
+        input_box.focus()
 
-# Start the first word on page load
+# Start the game
 load_new_word()
