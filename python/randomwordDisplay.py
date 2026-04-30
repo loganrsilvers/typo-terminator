@@ -48,20 +48,38 @@ class TypoGenerator:
 gen = TypoGenerator("wordbank/600vocabWords.txt")
 correct_answer = ""
 
+@when("keydown", "#UserTypingBox")
+def handle_input_key(event):
+    global correct_answer
+    
+    # Check if the user pressed the Enter key
+    if event.key == "Enter":
+        user_input = event.target.value.lower().strip()
+        
+        # If it's correct, move to the next word
+        if user_input == correct_answer:
+            print("Correct! Moving to next word...")
+            getWord()  # This clears the box and gets a new word
+        else:
+            # Optional: Visual shake or red border if they hit enter but it's wrong
+            event.target.style.borderColor = "#FF5252" 
+
 @when("input", "#UserTypingBox")
-def check_input(event):
+def live_check(event):
     global correct_answer
     user_input = event.target.value.lower().strip()
     feedback = document.getElementById("Feedback")
     
+    # Give them a green "success" hint as they type
     if user_input == correct_answer:
-        event.target.style.borderColor = "#4CAF50" # Green border on success
-        feedback.innerText = "MATCH FOUND!"
+        event.target.style.borderColor = "#4CAF50"
+        feedback.innerText = "Press Enter to continue!"
         feedback.style.color = "#4CAF50"
     else:
         event.target.style.borderColor = "var(--med)"
         feedback.innerText = ""
 
+# The getWord function stays the same as before
 @when("click", "#btn")
 def getWord(event=None):
     global correct_answer
@@ -70,14 +88,15 @@ def getWord(event=None):
     input_box = document.getElementById("UserTypingBox")
     feedback = document.getElementById("Feedback")
     
+    # Get new word from the class
     original, typo = gen.get_challenge()
     correct_answer = original.lower()
     
+    # Reset UI
     word_display.innerText = typo.lower()
     input_box.value = ""
     input_box.style.borderColor = "var(--med)"
     feedback.innerText = ""
-    input_box.focus()
-
+    input_box.focus() # Put the cursor back in the box automatically
 # Initialize
 getWord()
