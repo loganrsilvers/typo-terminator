@@ -4,17 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Typo Terminator</title>
+    
+    <!-- CRITICAL: This allows PyScript to run without being blocked by browser security -->
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' https://pyscript.net 'unsafe-inline' 'unsafe-eval';">
+    
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/index.css">
     <link rel="stylesheet" href="https://pyscript.net/releases/2026.1.1/core.css">
     <script type="module" src="https://pyscript.net/releases/2026.1.1/core.js"></script>
     
     <py-config>
-        # Core packages for your TypoGenerator logic
         packages = ["jellyfish", "numpy"]
 
         [[fetch]]
-        # Fetching the wordbank so it's available in the virtual filesystem
         files = ["wordbank/600vocabWords.txt"]
     </py-config>    
 </head>
@@ -27,20 +29,21 @@
     </nav>
 
     <div class="container">
-        <!-- Displays the scrambled typo -->
+        <!-- Where the scrambled word appears -->
         <h1 id="WordDisplay">history</h1>
         
-        <!-- Standard Input Box: Reliable typing that doesn't "break" -->
+        <!-- The textbox where the user types -->
         <input type="text" id="UserTypingBox" placeholder="Type the correct word..." 
                style="font-size: 1.5rem; padding: 10px; margin: 20px 0; border-radius: 8px; border: 2px solid var(--med); background: transparent; color: white; text-align: center; width: 80%;">
         
-        <!-- Feedback area for success messages -->
+        <!-- Where your Python code shows success/fail feedback -->
         <div id="Feedback" style="font-weight: bold; margin-bottom: 10px; min-height: 1.2em;"></div>
         
+        <!-- The trigger button -->
         <button id="btn">Next Word</button>
     </div>
 
-    <!-- The single Python file containing all your logic -->
+    <!-- Your merged Python file containing the GameTester and TypoGenerator -->
     <script type="py" src="python/randomwordDisplay.py" config="py-config"></script>
 </body>
 </html>
