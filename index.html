@@ -10,12 +10,12 @@
     <script type="module" src="https://pyscript.net/releases/2026.1.1/core.js"></script>
     
     <py-config>
-        # Ensure jellyfish and numpy are available for phoneticTypo.py
+        # Ensure jellyfish and numpy are available for the merged logic
         packages = ["jellyfish", "numpy"]
 
         [[fetch]]
-        # We fetch the wordbank and the logic file so 'import phoneticTypo' works
-        files = ["wordbank/600vocabWords.txt", "python/phoneticTypo.py"]
+        # We only need to fetch the word bank now since all logic is in one file
+        files = ["wordbank/600vocabWords.txt"]
     </py-config>    
 </head>
 <body>
@@ -27,18 +27,18 @@
     </nav>
 
     <div class="container">
-        <!-- The challenge word from your TypoGenerator class -->
+        <!-- The challenge word display -->
         <h1 id="WordDisplay">history</h1>
         
-        <!-- Live typing container -->
+        <!-- Live typing container - Matches the ID used in your merged Python script -->
         <div id="LiveTypeDisplay" style="min-height: 1.5em; font-size: 2rem; font-weight: bold; margin: 20px 0;"></div>
         
         <button id="btn">Click Me!</button>
     </div>
 
     <!-- 
-      Using 'src' for the main display logic. 
-      The browser will now look for 'randomwordDisplay.py' in your python folder.
+      This script now contains the TypoGenerator class, the keyboard listener, 
+      and the button logic all in one place.
     -->
     <script type="py" src="python/randomwordDisplay.py" config="py-config"></script>
 </body>
