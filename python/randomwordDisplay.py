@@ -1,5 +1,5 @@
 from pyscript import when, document, window
-from phoneticTypo import TypoGenerator 
+from python.phoneticTypo import TypoGenerator 
 
 # Initialize the generator at the top level
 gen = TypoGenerator() 
@@ -17,6 +17,7 @@ def handle_keypress(event):
     elif len(key) == 1:
         current_typing += key.lower()
 
+    # Matches id="LiveTypeDisplay" in your HTML
     display_element = document.getElementById("LiveTypeDisplay")
     if display_element:
         display_element.innerText = current_typing
@@ -24,15 +25,14 @@ def handle_keypress(event):
         # Auto-check if correct
         if current_typing.strip() == correct_answer.lower().strip():
             display_element.style.color = "var(--green)"
-            print("Match found!")
 
 @when("click", "#btn")
-def getWord(event=None): # event=None allows us to call this manually
+def getWord(event=None): 
     global current_typing, correct_answer
     
     current_typing = ""
     
-    # Update UI elements
+    # Matches ids in your HTML
     live_display = document.getElementById("LiveTypeDisplay")
     word_display = document.getElementById("WordDisplay")
     
@@ -45,5 +45,5 @@ def getWord(event=None): # event=None allows us to call this manually
         correct_answer = original.lower()
         word_display.innerText = typo.lower()
 
-# Start the game with a word immediately on load
+# Start the game immediately on load
 getWord()
