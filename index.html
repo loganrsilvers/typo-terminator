@@ -5,19 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Typo Terminator</title>
     
-   
-    <meta http-equiv="Content-Security-Policy" content="script-src 'self' https://pyscript.net 'unsafe-inline' 'unsafe-eval';">
-    
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/index.css">
-    <link rel="stylesheet" href="https://pyscript.net/releases/2026.1.1/core.css">
-    <script type="module" src="https://pyscript.net/releases/2026.1.1/core.js"></script>
+    
+    <link rel="stylesheet" href="https://pyscript.net/releases/2024.1.1/core.css">
+    <script type="module" src="https://pyscript.net/releases/2024.1.1/core.js"></script>
     
     <py-config>
         packages = ["jellyfish", "numpy"]
 
         [[fetch]]
-        files = ["wordbank/600vocabWords.txt"]
+        # We fetch the logic, the display script, and the wordbank
+        files = ["python/randomwordDisplay.py", "python/phoneticTypo.py", "wordbank/600vocabWords.txt"]
     </py-config>    
 </head>
 <body>
@@ -49,7 +48,6 @@
             <button id="SkipBtn" style="display: none;">Skip Word</button>
         </div>
     </div>
-
 
     <script type="py" src="python/randomwordDisplay.py" config="py-config"></script>
 </body>

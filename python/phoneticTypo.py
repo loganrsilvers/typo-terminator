@@ -3,13 +3,15 @@ import string
 import numpy as np
 import jellyfish
 from pathlib import Path
-from pyscript import when, document
 
-# --- Paste your TypoGenerator class here ---
 class TypoGenerator:
     def __init__(self, word_bank_file):
-        text = Path(word_bank_file).read_text(encoding="utf-8")
-        self.words = [w.strip().lower() for w in text.replace("\n", " ").split(",") if w.strip()]
+        try:
+            text = Path(word_bank_file).read_text(encoding="utf-8")
+            self.words = [w.strip().lower() for w in text.replace("\n", " ").split(",") if w.strip()]
+        except Exception as e:
+            print(f"Error loading wordbank: {e}")
+            self.words = ["programming", "backend", "interface", "columbia"]
 
     def phonetic_code(self, word):
         return {
@@ -33,7 +35,7 @@ class TypoGenerator:
             op = random.choice(["swap", "sub", "del", "ins"])
             if op == "swap" and len(word) >= 2:
                 i = random.randint(0, len(word) - 2)
-                typo = list(word); typo[i], typo[i+1] = typo[i+1], typo[i]; typo = "".join(typo)
+                t = list(word); t[i], t[i+1] = t[i+1], t[i]; typo = "".join(t)
             elif op == "sub" and len(word) >= 1:
                 i = random.randint(0, len(word) - 1)
                 typo = word[:i] + random.choice(string.ascii_lowercase) + word[i+1:]
@@ -54,22 +56,3 @@ class TypoGenerator:
         word = random.choice(self.words)
         typo = self.generate_typo(word)
         return word, typo
-
-# --- Game Logic ---
-
-# Initialize the generator
-gen = TypoGenerator("wordbank/600vocabWords.txt")
-correct_answer = ""
-
-@when("click", "#btn")
-def getWord(event):
-    global correct_answer
-    
-    # Use the class to get a word and its phonetic typo
-    original, typo = gen.get_challenge()
-    correct_answer = original
-    
-    # Update the UI
-    document.getElementById("WordDisplay").innerText = typo
-    document.getElementById("UserTypingBox").value = ""
-    print(f"Hint for dev: The answer is {original}")
