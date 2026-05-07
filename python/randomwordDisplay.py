@@ -2,10 +2,11 @@ import random
 import string
 import numpy as np
 import jellyfish
+import asyncio
 from pathlib import Path
 from pyscript import when, document
 
-# --- 1. TypoGenerator Class ---
+
 class TypoGenerator:
     def __init__(self, word_bank_file):
         try:
@@ -44,63 +45,88 @@ class TypoGenerator:
         word = random.choice(self.words)
         return word, self.generate_typo(word)
 
-# --- 2. NEW: GameTester Class ---
-class GameTester:
-    def __init__(self, generator):
-        self.gen = generator
 
-    def run_all_tests(self):
-        print("--- STARTING SYSTEM TEST ---")
-        self.test_word_loading()
-        self.test_typo_generation()
-        print("--- SYSTEM TEST COMPLETE ---")
-
-    def test_word_loading(self):
-        if len(self.gen.words) > 0:
-            print(f"✅ SUCCESS: Word bank loaded with {len(self.gen.words)} words.")
-        else:
-            print("❌ FAIL: Word bank is empty.")
-
-    def test_typo_generation(self):
-        orig, typo = self.gen.get_challenge()
-        if orig != typo:
-            print(f"✅ SUCCESS: Generated challenge '{typo}' from '{orig}'.")
-        else:
-            print("❌ FAIL: Generator returned the original word (no typo).")
-
-# --- 3. Logic & Event Handlers ---
 gen = TypoGenerator("wordbank/600vocabWords.txt")
 correct_answer = ""
+current_timer_task = None
 
-@when("click", "#btn")
-def handle_click(event):
+
+DIFFICULTIES = {
+    "easy": 15,
+    "medium": 8,
+    "hard": 4,
+    "terminator": 2
+}
+
+async def run_timer(seconds):
+    timer_display = document.getElementById("TimerDisplay")
+    input_box = document.getElementById("UserTypingBox")
+    
+    for i in range(seconds, -1, -1):
+        timer_display.innerText = f"Time: {i}s"
+        
+        if i == 0:
+            timer_display.innerText = "TIME'S UP!"
+            input_box.style.borderColor = "red"
+
+            await asyncio.sleep(1)
+            load_new_word()
+            return
+            
+        await asyncio.sleep(1)
+
+
+def check_answer():
     global correct_answer
     input_box = document.getElementById("UserTypingBox")
     user_input = input_box.value.lower().strip()
 
     if user_input == correct_answer:
+       
         load_new_word()
     else:
+     
         input_box.style.borderColor = "red"
         print(f"Mismatch! Answer is: {correct_answer}")
 
+@when("click", "#btn")
+def handle_click(event):
+    load_new_word() 
+
+
+@when("keyup", "#UserTypingBox")
+def handle_keyup(event):
+    if event.key == "Enter":
+        check_answer()
+
+@when("change", "#DifficultySelect")
+def handle_difficulty_change(event):
+    
+    load_new_word()
+
 def load_new_word():
-    global correct_answer
+    global correct_answer, current_timer_task
     word_display = document.getElementById("WordDisplay")
     input_box = document.getElementById("UserTypingBox")
+    diff_select = document.getElementById("DifficultySelect")
     
     if word_display and input_box:
         original, typo = gen.get_challenge()
         correct_answer = original.lower().strip()
         word_display.innerText = typo.lower()
+        
+        
         input_box.value = ""
         input_box.style.borderColor = "white"
         input_box.focus()
 
-# --- 4. Execution ---
-# Run the tests first to check the "engine"
-tester = GameTester(gen)
-tester.run_all_tests()
+        
+        if current_timer_task:
+            current_timer_task.cancel()
+        
+        
+        diff = diff_select.value if diff_select else "medium"
+        seconds = DIFFICULTIES.get(diff, 8)
+        current_timer_task = asyncio.create_task(run_timer(seconds))
 
-# Start the game
 load_new_word()

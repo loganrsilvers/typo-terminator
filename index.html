@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Typo Terminator</title>
     
-    <!-- CRITICAL: This allows PyScript to run without being blocked by browser security -->
+   
     <meta http-equiv="Content-Security-Policy" content="script-src 'self' https://pyscript.net 'unsafe-inline' 'unsafe-eval';">
     
     <link rel="stylesheet" href="css/style.css">
@@ -29,21 +29,31 @@
     </nav>
 
     <div class="container">
-        <!-- Where the scrambled word appears -->
+     
+        <div style="display: flex; justify-content: center; gap: 20px; align-items: center; margin-bottom: 20px;">
+            <select id="DifficultySelect" style="padding: 10px; font-size: 1.2rem; border-radius: 5px; background: #222; color: white; border: 2px solid white;">
+                <option value="easy">Easy (15s)</option>
+                <option value="medium" selected>Medium (8s)</option>
+                <option value="hard">Hard (4s)</option>
+                <option value="terminator">Terminator (2s)</option>
+            </select>
+            <h2 id="TimerDisplay" style="color: #ff4757; margin: 0; font-size: 2rem;">Time: 8s</h2>
+        </div>
+
+       
         <h1 id="WordDisplay">history</h1>
         
-        <!-- The textbox where the user types -->
-        <input type="text" id="UserTypingBox" placeholder="Type the correct word..." 
-               style="font-size: 1.5rem; padding: 10px; margin: 20px 0; border-radius: 8px; border: 2px solid var(--med); background: transparent; color: white; text-align: center; width: 80%;">
+
+        <input type="text" id="UserTypingBox" placeholder="Type the correct word and press Enter..." 
+               style="font-size: 1.5rem; padding: 10px; margin: 20px 0; border-radius: 8px; border: 2px solid white; background: transparent; color: white; text-align: center; width: 80%;">
         
-        <!-- Where your Python code shows success/fail feedback -->
         <div id="Feedback" style="font-weight: bold; margin-bottom: 10px; min-height: 1.2em;"></div>
         
-        <!-- The trigger button -->
-        <button id="btn">Next Word</button>
+
+        <button id="btn">Skip Word</button>
     </div>
 
-    <!-- Your merged Python file containing the GameTester and TypoGenerator -->
+
     <script type="py" src="python/randomwordDisplay.py" config="py-config"></script>
 </body>
 </html>
