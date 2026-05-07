@@ -6,7 +6,6 @@ import asyncio
 from pathlib import Path
 from pyscript import when, document
 
-
 class TypoGenerator:
     def __init__(self, word_bank_file):
         try:
@@ -49,7 +48,7 @@ class TypoGenerator:
 gen = TypoGenerator("wordbank/600vocabWords.txt")
 correct_answer = ""
 current_timer_task = None
-
+game_active = False 
 
 DIFFICULTIES = {
     "easy": 15,
@@ -58,19 +57,24 @@ DIFFICULTIES = {
     "terminator": 2
 }
 
+
 async def run_timer(seconds):
+    global game_active
     timer_display = document.getElementById("TimerDisplay")
     input_box = document.getElementById("UserTypingBox")
     
     for i in range(seconds, -1, -1):
+        if not game_active:
+            break 
+        
         timer_display.innerText = f"Time: {i}s"
         
         if i == 0:
             timer_display.innerText = "TIME'S UP!"
             input_box.style.borderColor = "red"
-
-            await asyncio.sleep(1)
-            load_new_word()
+            await asyncio.sleep(1) 
+            if game_active: 
+                load_new_word()
             return
             
         await asyncio.sleep(1)
@@ -81,31 +85,29 @@ def check_answer():
     input_box = document.getElementById("UserTypingBox")
     user_input = input_box.value.lower().strip()
 
+
     if user_input == correct_answer:
-       
         load_new_word()
-    else:
-     
-        input_box.style.borderColor = "red"
-        print(f"Mismatch! Answer is: {correct_answer}")
+
+
+@when("input", "#UserTypingBox")
+def handle_input(event):
+    check_answer()
 
 @when("click", "#btn")
 def handle_click(event):
-    load_new_word() 
-
-
-@when("keyup", "#UserTypingBox")
-def handle_keyup(event):
-    if event.key == "Enter":
-        check_answer()
+    load_new_word()
 
 @when("change", "#DifficultySelect")
 def handle_difficulty_change(event):
-    
     load_new_word()
 
 def load_new_word():
-    global correct_answer, current_timer_task
+    global correct_answer, current_timer_task, game_active
+    
+
+    game_active = False 
+    
     word_display = document.getElementById("WordDisplay")
     input_box = document.getElementById("UserTypingBox")
     diff_select = document.getElementById("DifficultySelect")
@@ -115,18 +117,21 @@ def load_new_word():
         correct_answer = original.lower().strip()
         word_display.innerText = typo.lower()
         
-        
         input_box.value = ""
         input_box.style.borderColor = "white"
         input_box.focus()
 
+
+        diff = diff_select.value if diff_select else "medium"
+        seconds = DIFFICULTIES.get(diff, 8)
+        
+        game_active = True
         
         if current_timer_task:
             current_timer_task.cancel()
         
-        
-        diff = diff_select.value if diff_select else "medium"
-        seconds = DIFFICULTIES.get(diff, 8)
-        current_timer_task = asyncio.create_task(run_timer(seconds))
+ 
+        current_timer_task = asyncio.ensure_future(run_timer(seconds))
+
 
 load_new_word()
