@@ -5,375 +5,79 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Typo Terminator</title>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
 
     <link rel="stylesheet" href="https://pyscript.net/releases/2024.1.1/core.css">
     <script type="module" src="https://pyscript.net/releases/2024.1.1/core.js"></script>
 
-    <py-config id="main-config">
+    <py-config>
+        packages = ["jellyfish", "numpy"]
         [[fetch]]
-        files = ["python/scrambler.py", "python/randomwordDisplay.py", "wordbank/600vocabWords.txt"]
+        from = "python"
+        files = ["phoneticTypo.py", "randomwordDisplay.py"]
+
+        [[fetch]]
+        files = ["wordbank/600vocabWords.txt"]
     </py-config>
-
-    <style>
-        :root {
-            --bg:       #0a0a0f;
-            --panel:    #0f0f1a;
-            --border:   #1e2a40;
-            --accent:   #00ffe7;
-            --danger:   #ff3c5a;
-            --warn:     #ffb400;
-            --success:  #39ff14;
-            --text:     #c8d8f0;
-            --dim:      #3a4a60;
-            --glow:     0 0 12px var(--accent), 0 0 30px rgba(0,255,231,0.25);
-            --glow-red: 0 0 12px var(--danger), 0 0 30px rgba(255,60,90,0.3);
-        }
-
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-        body {
-            background: var(--bg);
-            color: var(--text);
-            font-family: 'Share Tech Mono', monospace;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-        }
-
-        /* Scanline overlay */
-        body::after {
-            content: '';
-            pointer-events: none;
-            position: fixed;
-            inset: 0;
-            background: repeating-linear-gradient(
-                0deg,
-                transparent,
-                transparent 2px,
-                rgba(0,0,0,0.08) 2px,
-                rgba(0,0,0,0.08) 4px
-            );
-            z-index: 999;
-        }
-
-        .container {
-            width: min(760px, 95vw);
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* ── Header ── */
-        header {
-            text-align: center;
-            padding: 24px 0 18px;
-            border-bottom: 1px solid var(--border);
-        }
-
-        header h1 {
-            font-family: 'Orbitron', sans-serif;
-            font-size: clamp(1.8rem, 5vw, 3rem);
-            font-weight: 900;
-            letter-spacing: 6px;
-            color: var(--accent);
-            text-shadow: var(--glow);
-            text-transform: uppercase;
-        }
-
-        header h1 span { color: var(--danger); text-shadow: var(--glow-red); }
-
-        .tagline {
-            font-size: 0.72rem;
-            letter-spacing: 3px;
-            color: var(--dim);
-            margin-top: 6px;
-            text-transform: uppercase;
-        }
-
-        /* ── HUD bar ── */
-        .hud {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 14px 20px;
-            background: var(--panel);
-            border-bottom: 1px solid var(--border);
-        }
-
-        .hud-block { display: flex; flex-direction: column; align-items: center; gap: 2px; }
-
-        .hud-label {
-            font-size: 0.6rem;
-            letter-spacing: 3px;
-            color: var(--dim);
-            text-transform: uppercase;
-        }
-
-        .hud-value {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.4rem;
-            font-weight: 700;
-            color: var(--accent);
-            min-width: 3ch;
-            text-align: center;
-        }
-
-        #timer-value { color: var(--accent); transition: color 0.3s; }
-        #timer-value.warn   { color: var(--warn);   text-shadow: 0 0 8px var(--warn); }
-        #timer-value.danger { color: var(--danger);  text-shadow: var(--glow-red); }
-
-        /* Timer bar */
-        .timer-bar-wrap {
-            width: 100%;
-            height: 4px;
-            background: var(--border);
-        }
-
-        #timer-bar {
-            height: 100%;
-            background: var(--accent);
-            width: 100%;
-            transition: width 1s linear, background 0.3s;
-            box-shadow: 0 0 8px var(--accent);
-        }
-        #timer-bar.warn   { background: var(--warn);  box-shadow: 0 0 8px var(--warn); }
-        #timer-bar.danger { background: var(--danger); box-shadow: var(--glow-red); }
-
-        /* ── Main arena ── */
-        .arena {
-            background: var(--panel);
-            border: 1px solid var(--border);
-            border-top: none;
-            padding: 40px 24px 36px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 28px;
-        }
-
-        /* Difficulty buttons */
-        .diff-row {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-
-        .diff-btn {
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 0.75rem;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            padding: 7px 18px;
-            border: 1px solid var(--border);
-            background: transparent;
-            color: var(--dim);
-            border-radius: 2px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .diff-btn:hover  { border-color: var(--accent); color: var(--accent); }
-        .diff-btn.active {
-            border-color: var(--accent);
-            color: var(--accent);
-            background: rgba(0,255,231,0.06);
-            box-shadow: 0 0 8px rgba(0,255,231,0.2);
-        }
-        .diff-btn:disabled { opacity: 0.35; cursor: default; pointer-events: none; }
-
-        /* Word display */
-        .word-stage {
-            min-height: 90px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        #word-display {
-            font-family: 'Orbitron', sans-serif;
-            font-size: clamp(2rem, 7vw, 4rem);
-            font-weight: 700;
-            letter-spacing: 8px;
-            color: white;
-            text-transform: uppercase;
-            text-shadow: 0 0 20px rgba(255,255,255,0.15);
-            text-align: center;
-        }
-
-        @keyframes correctFlash {
-            0%   { color: var(--success); text-shadow: 0 0 20px var(--success); transform: scale(1.05); }
-            100% { color: white;          text-shadow: 0 0 20px rgba(255,255,255,0.15); transform: scale(1); }
-        }
-        @keyframes wrongFlash {
-            0%,50% { color: var(--danger); text-shadow: var(--glow-red); transform: translateX(-4px); }
-            25%    { transform: translateX(4px); }
-            100%   { color: white; transform: translateX(0); }
-        }
-
-        #word-display.flash-correct { animation: correctFlash 0.4s ease; }
-        #word-display.flash-wrong   { animation: wrongFlash   0.4s ease; }
-
-        /* Input */
-        #input-box {
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 1.4rem;
-            letter-spacing: 4px;
-            text-align: center;
-            width: 85%;
-            padding: 14px 20px;
-            background: rgba(255,255,255,0.03);
-            border: 1px solid var(--border);
-            border-radius: 3px;
-            color: white;
-            outline: none;
-            caret-color: var(--accent);
-            transition: border-color 0.2s, box-shadow 0.2s;
-        }
-        #input-box:focus  { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent), 0 0 16px rgba(0,255,231,0.1); }
-        #input-box:disabled { opacity: 0.4; cursor: not-allowed; }
-        #input-box.correct { border-color: var(--success); box-shadow: 0 0 10px rgba(57,255,20,0.3); }
-        #input-box.wrong   { border-color: var(--danger);  box-shadow: var(--glow-red); }
-
-        /* Feedback label */
-        #feedback {
-            font-size: 0.72rem;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            height: 16px;
-            color: transparent;
-            transition: color 0.2s;
-        }
-        #feedback.show-correct { color: var(--success); }
-        #feedback.show-wrong   { color: var(--danger); }
-        #feedback.show-timeout { color: var(--warn); }
-
-        /* Action buttons */
-        .btn-row { display: flex; gap: 12px; justify-content: center; }
-
-        .btn {
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 0.85rem;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            padding: 12px 28px;
-            border: 1px solid;
-            border-radius: 2px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        #start-btn {
-            background: rgba(0,255,231,0.08);
-            border-color: var(--accent);
-            color: var(--accent);
-            box-shadow: 0 0 10px rgba(0,255,231,0.15);
-        }
-        #start-btn:hover { background: rgba(0,255,231,0.15); box-shadow: var(--glow); }
-
-        #skip-btn {
-            display: none;
-            background: rgba(255,60,90,0.07);
-            border-color: var(--danger);
-            color: var(--danger);
-        }
-        #skip-btn:hover { background: rgba(255,60,90,0.14); box-shadow: var(--glow-red); }
-
-        /* Reveal */
-        #reveal { font-size: 0.72rem; letter-spacing: 2px; color: var(--dim); min-height: 14px; }
-        #reveal span { color: var(--warn); }
-
-        /* Footer */
-        footer {
-            text-align: center;
-            padding: 12px;
-            font-size: 0.6rem;
-            letter-spacing: 2px;
-            color: var(--dim);
-            border-top: 1px solid var(--border);
-        }
-
-        py-terminal { display: none !important; }
-    </style>
 </head>
 <body>
+    <div class="container">
+        <h2>TYPO TERMINATOR</h2>
 
-<div class="container">
+        <!-- ── Game Area ── -->
+        <div id="GameArea">
+            <!-- HUD -->
+            <div class="hud">
+                <div><span>Score </span><strong id="ScoreDisplay">0</strong></div>
+                <div><span>Streak </span><strong id="StreakDisplay">0</strong></div>
+                <div><span>Best </span><strong id="BestDisplay">0</strong></div>
+            </div>
 
-    <header>
-        <h1>TYPO <span>TERMINATOR</span></h1>
-        <p class="tagline">Unscramble the word before time expires</p>
-    </header>
+            <!-- Lives -->
+            <div id="LivesDisplay">❤️ ❤️ ❤️</div>
 
-    <div class="hud">
-        <div class="hud-block">
-            <span class="hud-label">Score</span>
-            <span class="hud-value" id="score-value">0</span>
+            <!-- Difficulty + Timer -->
+            <div class="top-bar">
+                <select id="DifficultySelect">
+                    <option value="easy">Easy (15s)</option>
+                    <option value="medium" selected>Medium (8s)</option>
+                    <option value="hard">Hard (4s)</option>
+                    <option value="terminator">Terminator (2s)</option>
+                </select>
+                <div id="TimerDisplay">Time: --</div>
+            </div>
+
+            <!-- Timer bar -->
+            <div id="TimerBar"><div id="TimerBarFill"></div></div>
+
+            <!-- Word to correct -->
+            <h1 id="WordDisplay">---</h1>
+
+            <!-- Input -->
+            <input type="text" id="UserTypingBox"
+                   placeholder="Click Start to Begin..." disabled>
+
+            <!-- Feedback -->
+            <div id="Feedback"></div>
+
+            <!-- Buttons -->
+            <div style="margin-top: 20px;">
+                <button id="StartBtn" class="btn btn-green">Start Game</button>
+                <button id="SkipBtn"  class="btn btn-red" style="display:none;">Skip Word</button>
+            </div>
         </div>
-        <div class="hud-block">
-            <span class="hud-label">Streak</span>
-            <span class="hud-value" id="streak-value">0</span>
-        </div>
-        <div class="hud-block">
-            <span class="hud-label">Time</span>
-            <span class="hud-value" id="timer-value">--</span>
-        </div>
-        <div class="hud-block">
-            <span class="hud-label">Best</span>
-            <span class="hud-value" id="best-value">0</span>
+
+        <!-- ── Game Over Screen ── -->
+        <div id="GameOverScreen">
+            <h2>GAME OVER</h2>
+            <div id="FinalStats">
+                <div>Final Score: <strong id="FinalScore">0</strong></div>
+                <div>Best Streak: <strong id="FinalStreak">0</strong></div>
+            </div>
+            <button id="RestartBtn" class="btn btn-green">Play Again</button>
         </div>
     </div>
 
-    <div class="timer-bar-wrap">
-        <div id="timer-bar"></div>
-    </div>
-
-    <div class="arena">
-
-        <div class="diff-row" id="diff-row">
-            <button class="diff-btn" data-diff="easy"       data-secs="15">Easy · 15s</button>
-            <button class="diff-btn active" data-diff="medium" data-secs="8">Medium · 8s</button>
-            <button class="diff-btn" data-diff="hard"       data-secs="4">Hard · 4s</button>
-            <button class="diff-btn" data-diff="terminator" data-secs="2">Terminator · 2s</button>
-        </div>
-
-        <div class="word-stage">
-            <div id="word-display">_ _ _</div>
-        </div>
-
-        <input id="input-box" type="text" autocomplete="off"
-               autocorrect="off" spellcheck="false"
-               placeholder="click start…" disabled>
-
-        <div id="feedback"></div>
-
-        <div class="btn-row">
-            <button class="btn" id="start-btn">▶ START</button>
-            <button class="btn" id="skip-btn">SKIP</button>
-        </div>
-
-        <div id="reveal"></div>
-
-    </div>
-
-    <footer>PRESS ENTER TO SUBMIT &nbsp;|&nbsp; UNSCRAMBLE WITHOUT ADDING OR REMOVING LETTERS</footer>
-
-</div>
-
-<!-- Difficulty button selection (plain JS, no PyScript needed) -->
-<script>
-    document.querySelectorAll('.diff-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-        });
-    });
-</script>
-
-<script type="py" src="python/randomwordDisplay.py" config="#main-config"></script>
-
+    <script type="py" src="python/randomwordDisplay.py"></script>
 </body>
 </html>
