@@ -1,45 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <link rel="stylesheet" href="https://pyscript.net/releases/2024.1.1/core.css">
-        <script type="module" src="https://pyscript.net/releases/2024.1.1/core.js"></script>
-    
-        <py-config id="main-config">
-            packages = ["jellyfish", "numpy"]
-            [[fetch]]
-            files = ["python/randomwordDisplay.py", "python/phoneticTypo.py", "wordbank/600vocabWords.txt"]
-        </py-config>
-    </head>
-<body>
-    <nav>
-        <ul>
-            <li><a href="about.html">about</a></li>
-            <li><a href="https://github.com/loganrsilvers/typo-terminator" target="_blank">github repo</a></li>
-        </ul>
-    </nav>
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://pyscript.net/releases/2024.1.1/core.css">
+    <script type="module" src="https://pyscript.net/releases/2024.1.1/core.js"></script>
 
+    <py-config id="main-config">
+        packages = ["jellyfish", "numpy"]
+        [[fetch]]
+        files = ["python/randomwordDisplay.py", "python/phoneticTypo.py", "wordbank/600vocabWords.txt"]
+    </py-config>
+</head>
+<body>
     <div class="container">
         <div style="display: flex; justify-content: center; gap: 20px; align-items: center; margin-bottom: 20px;">
-            <select id="DifficultySelect" style="padding: 10px; font-size: 1.2rem; border-radius: 5px; background: #222; color: white; border: 2px solid white;">
+            <select id="DifficultySelect" style="padding: 10px; font-size: 1.2rem; background: #222; color: white;">
                 <option value="easy">Easy (15s)</option>
                 <option value="medium" selected>Medium (8s)</option>
                 <option value="hard">Hard (4s)</option>
                 <option value="terminator">Terminator (2s)</option>
             </select>
-            <h2 id="TimerDisplay" style="color: #ff4757; margin: 0; font-size: 2rem;">Time: --</h2>
+            <h2 id="TimerDisplay" style="color: #ff4757; font-size: 2rem;">Time: --</h2>
         </div>
     
-        <h1 id="WordDisplay" style="letter-spacing: 2px;">---</h1>
+        <h1 id="WordDisplay" style="text-align: center;">---</h1>
         
-        <input type="text" id="UserTypingBox" placeholder="Click Start to Begin..." disabled
-               style="font-size: 1.5rem; padding: 10px; margin: 20px 0; border-radius: 8px; border: 2px solid white; background: transparent; color: white; text-align: center; width: 80%;">
+        <div style="text-align: center;">
+            <input type="text" id="UserTypingBox" placeholder="Click Start to Begin..." disabled
+                   style="font-size: 1.5rem; padding: 10px; width: 80%; text-align: center;">
+        </div>
         
-        <div style="display: flex; gap: 10px; justify-content: center;">
-            <button id="StartBtn" style="background-color: #2ecc71; color: white;">Start Game</button>
-            <button id="SkipBtn" style="display: none;">Skip Word</button>
+        <div style="display: flex; gap: 10px; justify-content: center; margin-top: 20px;">
+            <button id="StartBtn" style="background-color: #2ecc71; color: white; padding: 10px 20px;">Start Game</button>
+            <button id="SkipBtn" style="display: none; padding: 10px 20px;">Skip Word</button>
         </div>
     </div>
 
-    
+    <script type="py" src="python/randomwordDisplay.py" config="#main-config"></script>
 </body>
 </html>

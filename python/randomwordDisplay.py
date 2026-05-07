@@ -41,11 +41,14 @@ def load_next_challenge():
     input_box.style.borderColor = "white"
     input_box.focus()
 
-    diff = document.getElementById("DifficultySelect").value
+    # Get seconds based on difficulty dropdown
+    diff_element = document.getElementById("DifficultySelect")
+    diff = diff_element.value if diff_element else "medium"
     seconds = DIFFICULTIES.get(diff, 8)
     
     game_active = True
-    if current_timer_task: current_timer_task.cancel()
+    if current_timer_task:
+        current_timer_task.cancel()
     current_timer_task = asyncio.ensure_future(run_timer(seconds))
 
 @when("click", "#StartBtn")
