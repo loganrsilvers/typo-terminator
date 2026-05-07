@@ -1,23 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Typo Terminator</title>
+    <head>
+        <link rel="stylesheet" href="https://pyscript.net/releases/2024.1.1/core.css">
+        <script type="module" src="https://pyscript.net/releases/2024.1.1/core.js"></script>
     
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/index.css">
-    
-    <link rel="stylesheet" href="https://pyscript.net/releases/2024.1.1/core.css">
-    <script type="module" src="https://pyscript.net/releases/2024.1.1/core.js"></script>
-
-    <py-config id="main-config">
-        packages = ["jellyfish", "numpy"]
-
-        [[fetch]]
-        files = ["python/randomwordDisplay.py", "python/phoneticTypo.py", "wordbank/600vocabWords.txt"]
-    </py-config>
-</head>
+        <py-config id="main-config">
+            packages = ["jellyfish", "numpy"]
+            [[fetch]]
+            files = ["python/randomwordDisplay.py", "python/phoneticTypo.py", "wordbank/600vocabWords.txt"]
+        </py-config>
+    </head>
 <body>
     <nav>
         <ul>
@@ -48,6 +40,6 @@
         </div>
     </div>
 
-    <script type="py" src="python/randomwordDisplay.py" config="#main-config"></script>
+    
 </body>
 </html>
