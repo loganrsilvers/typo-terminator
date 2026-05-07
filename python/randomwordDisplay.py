@@ -1,12 +1,14 @@
+python
 import asyncio
 from pyscript import when, document
 from phoneticTypo import TypoGenerator 
 
-# Initialize game state
+# Game state
 gen = TypoGenerator("wordbank/600vocabWords.txt")
 correct_answer = ""
 current_timer_task = None
 game_active = False
+score = 0
 
 DIFFICULTIES = {"easy": 15, "medium": 8, "hard": 4, "terminator": 2}
 
@@ -16,13 +18,15 @@ async def run_timer(seconds):
     input_box = document.getElementById("UserTypingBox")
     
     for i in range(seconds, -1, -1):
-        if not game_active: break
+        if not game_active: 
+            break
         timer_display.innerText = f"Time: {i}s"
         if i == 0:
             timer_display.innerText = "TIME'S UP!"
             input_box.style.borderColor = "#ff4757"
-            await asyncio.sleep(0.8)
-            load_next_challenge()
+            await asyncio.sleep(1)
+            if game_active:
+                load_next_challenge()
             return
         await asyncio.sleep(1)
 
@@ -41,29 +45,33 @@ def load_next_challenge():
     input_box.style.borderColor = "white"
     input_box.focus()
 
-    # Get seconds based on difficulty dropdown
-    diff_element = document.getElementById("DifficultySelect")
-    diff = diff_element.value if diff_element else "medium"
+    diff_select = document.getElementById("DifficultySelect")
+    diff = diff_select.value if diff_select else "medium"
     seconds = DIFFICULTIES.get(diff, 8)
     
     game_active = True
-    if current_timer_task:
+    if current_timer_task: 
         current_timer_task.cancel()
     current_timer_task = asyncio.ensure_future(run_timer(seconds))
 
 @when("click", "#StartBtn")
 def start_game(event):
+    global score
+    score = 0
     document.getElementById("StartBtn").style.display = "none"
     document.getElementById("SkipBtn").style.display = "inline-block"
+    document.getElementById("DifficultySelect").disabled = True
     input_box = document.getElementById("UserTypingBox")
     input_box.disabled = False
     load_next_challenge()
 
 @when("keydown", "#UserTypingBox")
 def handle_keypress(event):
+    global score
     if event.key == "Enter":
         user_input = document.getElementById("UserTypingBox").value.lower().strip()
         if user_input == correct_answer:
+            score += 1
             load_next_challenge()
 
 @when("click", "#SkipBtn")
