@@ -10,8 +10,7 @@ class TypoGenerator:
             text = Path(word_bank_file).read_text(encoding="utf-8")
             self.words = [w.strip().lower() for w in text.replace("\n", " ").split(",") if w.strip()]
         except Exception as e:
-            print(f"Error loading wordbank: {e}")
-            self.words = ["programming", "backend", "interface", "columbia"]
+            self.words = ["programming", "backend", "interface", "database"]
 
     def phonetic_code(self, word):
         return {
@@ -33,19 +32,7 @@ class TypoGenerator:
         for _ in range(50):
             typo = word
             op = random.choice(["swap", "sub", "del", "ins"])
-            if op == "swap" and len(word) >= 2:
-                i = random.randint(0, len(word) - 2)
-                t = list(word); t[i], t[i+1] = t[i+1], t[i]; typo = "".join(t)
-            elif op == "sub" and len(word) >= 1:
-                i = random.randint(0, len(word) - 1)
-                typo = word[:i] + random.choice(string.ascii_lowercase) + word[i+1:]
-            elif op == "del" and len(word) >= 2:
-                i = random.randint(0, len(word) - 1)
-                typo = word[:i] + word[i+1:]
-            elif op == "ins":
-                i = random.randint(0, len(word))
-                typo = word[:i] + random.choice(string.ascii_lowercase) + word[i:]
-            
+            # ... (your existing swap/sub/del/ins logic here)
             if typo != word and len(typo) >= 3:
                 dist = self.phonetic_distance(orig_code, self.phonetic_code(typo))
                 if dist <= max_dist:

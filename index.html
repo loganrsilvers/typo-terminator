@@ -10,14 +10,13 @@
     
     <link rel="stylesheet" href="https://pyscript.net/releases/2024.1.1/core.css">
     <script type="module" src="https://pyscript.net/releases/2024.1.1/core.js"></script>
-    
-    <py-config>
+
+    <py-config id="main-config">
         packages = ["jellyfish", "numpy"]
 
         [[fetch]]
-        # We fetch the logic, the display script, and the wordbank
         files = ["python/randomwordDisplay.py", "python/phoneticTypo.py", "wordbank/600vocabWords.txt"]
-    </py-config>    
+    </py-config>
 </head>
 <body>
     <nav>
@@ -49,6 +48,6 @@
         </div>
     </div>
 
-    <script type="py" src="python/randomwordDisplay.py" config="py-config"></script>
+    <script type="py" src="python/randomwordDisplay.py" config="#main-config"></script>
 </body>
 </html>
