@@ -1,22 +1,29 @@
 /* ── Typo Terminator – style.css ── */
 
 :root {
-    --bg:      #1a1a1a;
-    --fg:      #ffffff;
-    --accent:  #2ecc71;
-    --danger:  #ff4757;
-    --warn:    #f39c12;
+    --bg:      #2E282A;
+    --fg:      #FAD8D6;
+    --accent:  #17BEBB;
+    --danger:  #EF3E36;
+    --warn:    #EDB88B;
     --muted:   #888;
-    --border:  #ffffff;
+    --border:  #FAD8D6;
     --radius:  5px;
   }
   
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   
+  @font-face{
+      font-family: 'mine';
+      src: url(fonts/TTMedium.ttf);
+  }
+
+
   body {
     background: var(--bg);
+    background-image: url(../img/555.gif);
     color: var(--fg);
-    font-family: Arial, sans-serif;
+    font-family: 'mine';
     min-height: 100vh;
     display: flex;
     align-items: center;
