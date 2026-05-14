@@ -12,6 +12,7 @@
 
     <py-config>
         packages = ["jellyfish", "numpy"]
+
         [[fetch]]
         from = "python"
         files = ["phoneticTypo.py", "randomwordDisplay.py"]
@@ -22,21 +23,31 @@
 </head>
 <body>
     <div class="container">
+
         <h2>TYPO TERMINATOR</h2>
+
+        <!-- ── Loading Screen ── -->
+        <div id="LoadingScreen">
+            <div id="LoadingText">
+                Approved: <span id="LoadingApproved">0</span> / <span id="LoadingTotal">20</span>
+            </div>
+            <div id="LoadingCurrentWord">starting up...</div>
+            <div id="LoadingBarTrack">
+                <div id="LoadingBar"></div>
+            </div>
+        </div>
 
         <!-- ── Game Area ── -->
         <div id="GameArea">
-            <!-- HUD -->
+
             <div class="hud">
                 <div><span>Score </span><strong id="ScoreDisplay">0</strong></div>
                 <div><span>Streak </span><strong id="StreakDisplay">0</strong></div>
                 <div><span>Best </span><strong id="BestDisplay">0</strong></div>
             </div>
 
-            <!-- Lives -->
-            <div id="LivesDisplay">❤️ ❤️ ❤️</div>
+            <div id="LivesDisplay">❤️❤️❤️</div>
 
-            <!-- Difficulty + Timer -->
             <div class="top-bar">
                 <select id="DifficultySelect">
                     <option value="easy">Easy (15s)</option>
@@ -47,24 +58,22 @@
                 <div id="TimerDisplay">Time: --</div>
             </div>
 
-            <!-- Timer bar -->
             <div id="TimerBar"><div id="TimerBarFill"></div></div>
 
-            <!-- Word to correct -->
             <h1 id="WordDisplay">---</h1>
 
-            <!-- Input -->
             <input type="text" id="UserTypingBox"
-                   placeholder="Click Start to Begin..." disabled>
+                   placeholder="Click Start to Begin..."
+                   autocomplete="off" autocorrect="off" spellcheck="false"
+                   disabled>
 
-            <!-- Feedback -->
             <div id="Feedback"></div>
 
-            <!-- Buttons -->
             <div style="margin-top: 20px;">
-                <button id="StartBtn" class="btn btn-green">Start Game</button>
+                <button id="StartBtn" class="btn btn-green" disabled>Start Game</button>
                 <button id="SkipBtn"  class="btn btn-red" style="display:none;">Skip Word</button>
             </div>
+
         </div>
 
         <!-- ── Game Over Screen ── -->
@@ -76,6 +85,7 @@
             </div>
             <button id="RestartBtn" class="btn btn-green">Play Again</button>
         </div>
+
     </div>
 
     <script type="py" src="python/randomwordDisplay.py"></script>

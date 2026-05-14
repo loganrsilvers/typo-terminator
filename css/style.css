@@ -119,6 +119,7 @@
     transition: opacity 0.15s;
   }
   .btn:hover { opacity: 0.85; }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
   .btn-green  { background: var(--accent); color: #fff; }
   .btn-red    { background: var(--danger); color: #fff; }
   
@@ -161,4 +162,28 @@
   
   .flash-wrong { border-color: var(--danger) !important; }
   .flash-right { border-color: var(--accent) !important; }
-  
+
+  /* ── Loading screen ── */
+  #LoadingScreen { margin: 30px 0; }
+  #LoadingText   { font-size: 1.1rem; margin-bottom: 6px; }
+  #LoadingCurrentWord {
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-bottom: 12px;
+    font-style: italic;
+  }
+  #LoadingBarTrack {
+    width: 80%;
+    height: 6px;
+    background: #333;
+    border-radius: 3px;
+    margin: 0 auto;
+    overflow: hidden;
+  }
+  #LoadingBar {
+    height: 100%;
+    width: 0%;
+    background: var(--accent);
+    transition: width 0.3s ease;
+  }
+  .hidden { display: none !important; }
